@@ -31,6 +31,7 @@ jobs:
         
     # ShiftLeft requires Java 1.8. Post the package step override the version
     - name: Setup Java JDK
+      if: ${{ matrix.language == 'js' }}
       uses: actions/setup-java@v3
       with:
         java-version: 11.0.x
@@ -45,7 +46,7 @@ jobs:
 
     # Run SL Analyze for a Python App with requirements.txt 
     - name: NextGen Static Analysis for Python App
-      if: ${{ (matrix.language == 'python') && (hashFiles('requirements.txt') != '') }}
+      if: ${{ (matrix.language == 'python') && (hashFiles('python_flask/requirements.txt') != '') }}
       run: |
         pip install -r requirements.txt
         ${GITHUB_WORKSPACE}/sl analyze  --wait --tag app.group=multilanguage-app --app multilanguage-python-app --container 18fgsa/s3-resource --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --pythonsrc $(pwd)/python_flask
@@ -54,9 +55,9 @@ jobs:
         
     # Run SL Analyze for a Python App without requirements.txt
     - name: Legacy Static Analysis for Python App
-      if: ${{ (matrix.language == 'python') && (hashFiles('requirements.txt') == '') }}
+      if: ${{ (matrix.language == 'python') && (hashFiles('python_flask/requirements.txt') == '') }}
       run: |
-        echo "Please update your `shiftleft-python-demo` fork!"
+        echo "Please update your `multilanguage-demo` fork!"
         ${GITHUB_WORKSPACE}/sl analyze --strict --wait --tag app.group=multilanguage-app --app multilanguage-python-legacy --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --pythonsrc $(pwd)/python_flask
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
@@ -65,7 +66,7 @@ jobs:
   ##############################################
   # Scan Java applications
   ##############################################
-  Java-Analysis:
+  Qwiet-Static-Analysis-Java:
     runs-on: ubuntu-latest    
     steps:
     - uses: actions/checkout@v3
