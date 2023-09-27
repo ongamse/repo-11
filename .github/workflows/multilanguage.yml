@@ -9,12 +9,15 @@ on:
 jobs:
   Qwiet-Static-Analysis:
     runs-on: ubuntu-latest
+    # Use the shiftleft/core image, which supports multiple
+    # languages, including JavaScript/TypeScript, Python, and Go
     container:
       image: shiftleft/core:latest    
     strategy:
       fail-fast: false
       matrix:
         language: [java, js, python]      
+        
     steps:
     - uses: actions/checkout@v3
     
@@ -30,21 +33,83 @@ jobs:
     - name: Setup Java JDK
       uses: actions/setup-java@v3
       with:
+        java-version: 11.0.x
         distribution: zulu
-        java-version: 8
-        
-    # Perform any app specific build or restore here
-    - name: App specific build
-      if: ${{ matrix.language == 'python' }}
-      run: |
-        pip install -r python_flask/requirements.txt        
-        
+
     # Run SL Analyze for Java Script Code 
     - name: NextGen Static Analysis for Java Script
       if: ${{ matrix.language == 'js' }}
-      run: ${GITHUB_WORKSPACE}/sl analyze --strict --wait --app multilanguage-js-code --container 18fgsa/s3-resource --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --js  ./js-demo/
+      run: ${GITHUB_WORKSPACE}/sl analyze --wait --tag app.group=multilanguage-app --app multilanguage-js-code --container 18fgsa/s3-resource --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --js  $(pwd)/js-demo/
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
-        SHIFTLEFT_API_HOST: www.shiftleft.io
-        SHIFTLEFT_GRPC_TELEMETRY_HOST: telemetry.shiftleft.io:443
-        SHIFTLEFT_GRPC_API_HOST: api.shiftleft.io:443
+
+    # Run SL Analyze for a Python App with requirements.txt 
+    - name: NextGen Static Analysis for Python App
+      if: ${{ (matrix.language == 'python') && (hashFiles('requirements.txt') != '') }}
+      run: |
+        pip install -r requirements.txt
+        ${GITHUB_WORKSPACE}/sl analyze  --wait --tag app.group=multilanguage-app --app multilanguage-python-app --container 18fgsa/s3-resource --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --pythonsrc $(pwd)/python_flask
+      env:
+        SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
+        
+    # Run SL Analyze for a Python App without requirements.txt
+    - name: Legacy Static Analysis for Python App
+      if: ${{ (matrix.language == 'python') && (hashFiles('requirements.txt') == '') }}
+      run: |
+        echo "Please update your `shiftleft-python-demo` fork!"
+        ${GITHUB_WORKSPACE}/sl analyze --strict --wait --no-cpg --tag app.group=multilanguage-app --app multilanguage-python-legacy --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --pythonsrc $(pwd)/python_flask
+      env:
+        SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
+
+        
+  ##############################################
+  # Scan Java applications
+  ##############################################
+  Java-Analysis:
+    runs-on: ubuntu-latest    
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Java JDK
+      uses: actions/setup-java@v1.4.3
+      with:
+        java-version: 1.8
+    - name: Download Qwiet cli
+      run: |
+        curl https://cdn.shiftleft.io/download/sl > ${GITHUB_WORKSPACE}/sl && chmod a+rx ${GITHUB_WORKSPACE}/sl
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    # Try to auto build Maven, Gradle, and/or sbt projects
+    - name: Build and Analyze
+      run: |
+        TARGET_DIR=target
+        BUILT=0
+        POM_COUNT=$(find . -maxdepth 1 -type f -name "pom.xml" -not -path '*/\.git/*' | wc -l | tr -d " ")
+        GRADLE_COUNT=$(find . -maxdepth 1 -type f -name "build.gradle" -not -path '*/\.git/*' | wc -l | tr -d " ")
+        SBT_COUNT=$(find . -maxdepth 1 -type f -name "build.sbt" -not -path '*/\.git/*' | wc -l | tr -d " ")
+        if [ "$POM_COUNT" != "0" ]; then
+          mvn compile package
+          BUILT=1
+        elif [ "$GRADLE_COUNT" != "0" ]; then
+          gradle jar
+          #./gradlew jar
+          TARGET_DIR=build
+          BUILT=1
+        elif [ "$SBT_COUNT" != "0" ]; then
+          echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+          curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add
+          sudo apt update -y
+          sudo apt-get install sbt -y
+          sbt package
+          BUILT=1
+        fi
+        if [ "$BUILT" = "1" ] && [ -d "$TARGET_DIR" ]; then
+          jar cvf app.jar -C $TARGET_DIR .
+          ${GITHUB_WORKSPACE}/sl analyze --wait --tag app.group=multilanguage-app --app multilanguage-java --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --vcs-prefix-correction "*=src/main/java" --java app.jar
+        else
+          echo "Unable to build the project automatically. Please follow the instructions in our documentation to setup this project - https://docs.shiftleft.io/sast/analyzing-applications/java"  
+        fi
+      env:
+        SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
+      working-directory: java_demo
