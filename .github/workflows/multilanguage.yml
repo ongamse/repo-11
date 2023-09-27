@@ -1,0 +1,50 @@
+---
+name: Qwiet Multi-Language Demo
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Qwiet-Static-Analysis:
+    runs-on: ubuntu-latest
+    container:
+      image: shiftleft/core:latest    
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [java, js, python]      
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch    
+    - name: Download ShiftLeft CLI
+      run: |
+        curl https://cdn.shiftleft.io/download/sl > ${GITHUB_WORKSPACE}/sl && chmod a+rx ${GITHUB_WORKSPACE}/sl
+        
+    # ShiftLeft requires Java 1.8. Post the package step override the version
+    - name: Setup Java JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: zulu
+        java-version: 8
+        
+    # Perform any app specific build or restore here
+    - name: App specific build
+      if: ${{ matrix.language == 'python' }}
+      run: |
+        pip install -r python_flask/requirements.txt        
+        
+    # Run SL Analyze for Java Script Code 
+    - name: NextGen Static Analysis for Java Script
+      if: ${{ matrix.language == 'js' }}
+      run: ${GITHUB_WORKSPACE}/sl analyze --strict --wait --app multilanguage-js-code --container 18fgsa/s3-resource --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --js  ./js-demo/
+      env:
+        SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
+        SHIFTLEFT_API_HOST: www.shiftleft.io
+        SHIFTLEFT_GRPC_TELEMETRY_HOST: telemetry.shiftleft.io:443
+        SHIFTLEFT_GRPC_API_HOST: api.shiftleft.io:443
