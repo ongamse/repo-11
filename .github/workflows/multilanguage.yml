@@ -48,7 +48,7 @@ jobs:
     - name: NextGen Static Analysis for Python App
       if: ${{ (matrix.language == 'python') && (hashFiles('python_flask/requirements.txt') != '') }}
       run: |
-        pip install -r requirements.txt
+        pip install -r python_flask/requirements.txt
         ${GITHUB_WORKSPACE}/sl analyze  --wait --tag app.group=multilanguage-app --app multilanguage-python-app --container 18fgsa/s3-resource --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --pythonsrc $(pwd)/python_flask
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
