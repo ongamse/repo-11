@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [java, js, python]      
+        language: [js, python]      
         
     steps:
     - uses: actions/checkout@v3
@@ -57,7 +57,7 @@ jobs:
       if: ${{ (matrix.language == 'python') && (hashFiles('requirements.txt') == '') }}
       run: |
         echo "Please update your `shiftleft-python-demo` fork!"
-        ${GITHUB_WORKSPACE}/sl analyze --strict --wait --no-cpg --tag app.group=multilanguage-app --app multilanguage-python-legacy --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --pythonsrc $(pwd)/python_flask
+        ${GITHUB_WORKSPACE}/sl analyze --strict --wait --tag app.group=multilanguage-app --app multilanguage-python-legacy --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --pythonsrc $(pwd)/python_flask
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
 
