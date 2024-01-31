@@ -24,7 +24,9 @@ export SHIFTLEFT_ACCESS_TOKEN=$token
 
 HIDDEN_DIR=$(ls -a $path | grep '.git')
 
-if [ -v ${HIDDEN_DIR} ]; then
+if ${HIDDEN_DIR}; then
+  echo "Workspace is a git repo"
+else
   git init 2> /dev/null > /dev/null
   git config user.name "githubtest"
   git add --all 2> /dev/null > /dev/null
