@@ -39,6 +39,7 @@ then
 fi
 
 docker run --platform linux/amd64 --rm --user $(id -u) -v $path:$path -w $path -t shiftleft/lang-detect:latest github-linguist $path --json | jq . > out.json
+export SHIFTLEFT_SBOM_GENERATOR=2
 
 json=$(cat out.json)
 languages=$(echo "$json" | jq  -r 'keys[]' )
@@ -46,39 +47,39 @@ for lang in $languages; do
 
     case $lang in
         Java)
-            SHIFTLEFT_SBOM_GENERATOR=2 sl analyze --app $appName-$lang --tag app.group=$appName --javasrc $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --javasrc $path
             ;;
         Scala)
-            SHIFTLEFT_SBOM_GENERATOR=2 sl analyze --app $appName-$lang --tag app.group=$appName --javasrc $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --javasrc $path
             ;;
         Python)
-            sl analyze --app $appName-$lang --tag app.group=$appName --pythonsrc $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --pythonsrc $path
             ;;
         JavaScript)
-            SHIFTLEFT_SBOM_GENERATOR=2 sl analyze --app $appName-$lang --tag app.group=$appName --js $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --js $path
             ;;
         TypeScript)
-            SHIFTLEFT_SBOM_GENERATOR=2 sl analyze --app $appName-$lang --tag app.group=$appName --js $path -- --ts
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --js $path -- --ts
             ;;
         C#)
-            sl analyze --app $appName-$lang --tag app.group=$appName --csharp $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --csharp $path
             ;;
         PHP)
-            sl analyze --app $appName-$lang --tag app.group=$appName --php $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --php $path
             ;;
         Go)
-            sl analyze --app $appName-$lang --tag app.group=$appName --go $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --go $path
             ;;
         C)
-            sl analyze --app $appName-$lang --tag app.group=$appName --c $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --c $path
             ;;
         Kotlin)
-            sl analyze --app $appName-$lang --tag app.group=$appName --kotlin $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --kotlin $path
             ;;
         HCL)
-            sl analyze --app $appName-$lang --tag app.group=$appName --checkov $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --checkov $path
             ;;
-        *) Echo "Also Found: " $lang ;;
+        *) echo "Language Found: " $lang ;;
     esac
 
 done
