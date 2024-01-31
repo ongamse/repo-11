@@ -16,7 +16,7 @@ INT=0
 
 while [ $TOTAL_OPTIONS -gt $INT ]
 do
-        case ${OPTIONS[$INT]} in
+        case $(OPTIONS[$INT]) in
 
                 --app | -app)
                         INT=`expr $INT + 1`
