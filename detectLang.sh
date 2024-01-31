@@ -28,6 +28,7 @@ if [ -z "${HIDDEN_DIR}" ]; then
   echo "${HIDDEN_DIR} is empty"
   git init 2> /dev/null > /dev/null
   git config user.name "githubtest"
+  git config user.name "githubtest"
   git add . 
   git commit -m "local linguist auto commit" 
   git describe --tags
