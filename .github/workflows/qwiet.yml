@@ -26,6 +26,7 @@ jobs:
 
     - name: Run sl analyze
       run: |
+        sudo chmod a+x ./detectLang.sh
         ./detectLang.sh --app testmultilang --path ${GITHUB_WORKSPACE} 
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
