@@ -81,9 +81,9 @@ for lang in $languages; do
         HCL)
             ./sl analyze --app $appName-$lang --tag app.group=$appName --checkov $path
             ;;
-        *) otherLanguages+=$lang && otherLanguages+=", " ;;
+        *) otherLanguages=$otherLanguages + $lang && otherLanguages=$otherLanguages + ", " ;;
     esac
 
 done
 
-echo "Languages Present that didnt have a Qwiet Scan: " + otherLanguages
+echo "Languages Present that didnt have a Qwiet Scan: " + ${otherLanguages}
