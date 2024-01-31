@@ -27,12 +27,12 @@ HIDDEN_DIR=$(ls -a $path | grep '.git')
 if [ -z "${HIDDEN_DIR}" ]; then
   echo "${HIDDEN_DIR} is empty"
   git init 2> /dev/null > /dev/null
-  git config user.name "githubtest"
-  git config user.name "githubtest"
-  git add . 
-  git commit -m "local linguist auto commit" 
-  git describe --tags
-  git log -1
+  git config user.name "githubtest" 2> /dev/null > /dev/null
+  git config user.name "githubtest" 2> /dev/null > /dev/null
+  git add . 2> /dev/null > /dev/null
+  git commit -m "local linguist auto commit"  2> /dev/null > /dev/null
+  git describe --tags 2> /dev/null > /dev/null
+  git log -1 2> /dev/null > /dev/null
 fi
 
 if [ ${path} = "." ];
