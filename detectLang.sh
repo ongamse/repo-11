@@ -40,7 +40,7 @@ then
     path=$pwd
 fi
 
-docker run --platform linux/amd64 --rm --user $(id -u) -v $path:$path -w $path -t shiftleft/lang-detect:latest github-linguist $path
+docker run --platform linux/amd64 --rm --user $(id -u) -v $path:$path -w $path -t shiftleft/lang-detect:latest github-linguist $path --json | jq . > out.json
 export SHIFTLEFT_SBOM_GENERATOR=2
 
 otherLanguages=""
