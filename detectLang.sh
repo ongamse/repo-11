@@ -28,8 +28,10 @@ if [ -z "${HIDDEN_DIR}" ]; then
   echo "${HIDDEN_DIR} is empty"
   git init 2> /dev/null > /dev/null
   git config user.name "githubtest"
-  git add --all 2> /dev/null > /dev/null
-  git commit -m "local linguist auto commit" 2> /dev/null > /dev/null
+  git add . 
+  git commit -m "local linguist auto commit" 
+  git describe --tags
+  git log -1
 fi
 
 if [ ${path} = "." ];
