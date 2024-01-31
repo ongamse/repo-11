@@ -8,45 +8,16 @@ _usage(){
     echo "============================================================================================================================="
 }
 
-OPTIONS=($@)
 TOTAL_OPTIONS=$#
 INT=1
 
-
-
-while [ $TOTAL_OPTIONS -gt $INT ]
-do
-        case $(OPTIONS[$INT]) in
-
-                --app | -app)
-                        INT=`expr $INT + 1`
-                        appName=${OPTIONS[$INT]}
-                        ;;
-
-                --path | -path)
-                        INT=`expr $INT + 1`
-                        path=${OPTIONS[$INT]}
-                        ;;
-
-
-                --token | -token)
-                        INT=`expr $INT + 1`
-                        token=${OPTIONS[$INT]}
-                        ;;
-
-                --help | -help | -h)
-                        _usage
-                        exit 0
-                        ;;
-
-                *)
-                        echo "Invalid Option - ${OPTIONS[$INT]}"
-                        _usage
-                        exit 1
-                        ;;
-
-        esac
-        INT=`expr $INT + 1`
+while getopts a:p:t: flag
+do 
+    case "${flag}" in
+        a) appName=${OPTARG};;
+        p) path=${OPTARG};;
+        t) token=${OPTARG};;
+    esac
 done
 
 export SHIFTLEFT_ACCESS_TOKEN=$token
