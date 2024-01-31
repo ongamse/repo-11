@@ -31,8 +31,9 @@ if [[ -z $HIDDEN_DIR ]]; then
   git commit -m "local linguist auto commit" 2> /dev/null > /dev/null
 fi
 
-if [[ "$path" == "." ]]; then
+if [[  "$path" == "."  ]]; then
     path=$pwd
+    echo "Path is current dir"
 fi
 
 docker run --platform linux/amd64 --rm -v $path:$path -w $path -t shiftleft/lang-detect:latest github-linguist $path --json | jq . > out.json
