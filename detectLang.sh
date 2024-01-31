@@ -31,7 +31,8 @@ if [[ -z $HIDDEN_DIR ]]; then
   git commit -m "local linguist auto commit" 2> /dev/null > /dev/null
 fi
 
-if [[  "$path" == "."  ]]; then
+if test "$path" == "." 
+then
     path=$pwd
     echo "Path is current dir"
 fi
