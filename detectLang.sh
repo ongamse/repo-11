@@ -23,8 +23,8 @@ done
 export SHIFTLEFT_ACCESS_TOKEN=$token
 
 HIDDEN_DIR=$(ls -a $path | grep '.git')
-#if [[ $HIDDEN_DIR == *".git"* ]]; then
-if [[ ! $HIDDEN_DIR ]]; then
+
+if [[ -z $HIDDEN_DIR ]]; then
   git init 2> /dev/null > /dev/null
   git config user.name "githubtest"
   git add --all 2> /dev/null > /dev/null
