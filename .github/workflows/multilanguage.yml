@@ -4,7 +4,7 @@ name: Qwiet Multi-Language Demo
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   Qwiet-Static-Analysis:
