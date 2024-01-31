@@ -24,8 +24,8 @@ export SHIFTLEFT_ACCESS_TOKEN=$token
 
 HIDDEN_DIR=$(ls -a $path | grep '.git')
 
-if ${HIDDEN_DIR}; then
-  echo "Workspace is a git repo"
+if [ -z "${HIDDEN_DIR}" ]; then
+  echo "${HIDDEN_DIR} is empty"
 else
   git init 2> /dev/null > /dev/null
   git config user.name "githubtest"
@@ -33,13 +33,13 @@ else
   git commit -m "local linguist auto commit" 2> /dev/null > /dev/null
 fi
 
-if [ ${path} = "." ];
+if [ ${path} == "." ];
 then
     path=$pwd
     echo "Path is current dir"
 fi
 
-docker run --platform linux/amd64 --rm -v $path:$path -w $path -t shiftleft/lang-detect:latest github-linguist $path --json | jq . > out.json
+docker run --platform linux/amd64 --rm -v $path:$path -w $path -t shiftleft/lang-detect:latest github-linguist $path 
 
 json=$(cat out.json)
 languages=$(echo "$json" | jq  -r 'keys[]' )
