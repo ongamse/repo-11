@@ -89,4 +89,4 @@ for lang in $languages; do
 
 done
 
-echo "Languages Present that didnt have a Qwiet Scan:  ${otherLanguages}" | sed 's/,$//g'
+echo "Languages Present that didnt have a Qwiet Scan:  ${otherLanguages}" | sed 's/, $//g'
