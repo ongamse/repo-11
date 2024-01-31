@@ -1,0 +1,31 @@
+---
+name: Qwiet Multi-Language Demo
+
+on:
+  push:
+
+jobs:
+  Qwiet-Static-Analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Deps
+      run: |
+        apt-get install jq
+
+    - name: Identify Language Composition
+      shell: bash
+      run: docker run --rm  -v  $(pwd):/tmp -w /tmp -t shiftleft/lang-detect:latest github-linguist  /tmp  | jq .
+
+
+    - name: Download ShiftLeft CLI
+      run: |
+        curl https://cdn.shiftleft.io/download/sl > ${GITHUB_WORKSPACE}/sl && chmod a+rx ${GITHUB_WORKSPACE}/sl 
+
+    - name: Run sl analyze
+      run: |
+        ./detectLang.sh --app testmultilang --path ${GITHUB_WORKSPACE} 
+      env:
+        SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
