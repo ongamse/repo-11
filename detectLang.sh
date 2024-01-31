@@ -81,7 +81,7 @@ for lang in $languages; do
         HCL)
             ./sl analyze --app $appName-$lang --tag app.group=$appName --checkov $path
             ;;
-        *) otherLanguages="${otherLanguages}, ${lang}" ;;
+        *) otherLanguages="${lang}, ${otherLanguages}" ;;
     esac
 
 done
