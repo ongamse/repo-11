@@ -41,6 +41,8 @@ fi
 docker run --platform linux/amd64 --rm --user $(id -u) -v $path:$path -w $path -t shiftleft/lang-detect:latest github-linguist $path --json | jq . > out.json
 export SHIFTLEFT_SBOM_GENERATOR=2
 
+otherLanguages=""
+
 json=$(cat out.json)
 languages=$(echo "$json" | jq  -r 'keys[]' )
 for lang in $languages; do
@@ -79,7 +81,9 @@ for lang in $languages; do
         HCL)
             ./sl analyze --app $appName-$lang --tag app.group=$appName --checkov $path
             ;;
-        *) echo "Language Found: " $lang ;;
+        *) otherLanguages+=$lang && otherLanguages+=", " ;;
     esac
 
 done
+
+echo "Languages Present that didnt have a Qwiet Scan: " + otherLanguages
