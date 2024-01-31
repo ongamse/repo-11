@@ -10,7 +10,7 @@ _usage(){
 
 OPTIONS=$@
 TOTAL_OPTIONS=$#
-INT=0
+INT=1
 
 
 
