@@ -13,7 +13,7 @@ jobs:
 
     - name: Install Deps
       run: |
-        apt-get install jq
+        sudo apt-get install jq
 
     - name: Identify Language Composition
       shell: bash
