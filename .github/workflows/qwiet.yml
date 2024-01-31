@@ -17,7 +17,7 @@ jobs:
 
     - name: Identify Language Composition
       shell: bash
-      run: docker run --rm  -v  $(pwd):/tmp -w /tmp -t shiftleft/lang-detect:latest github-linguist  /tmp  | jq .
+      run: docker run --rm  -v  $(pwd):/tmp -w /tmp -t shiftleft/lang-detect:latest github-linguist  /tmp 
 
 
     - name: Download ShiftLeft CLI
