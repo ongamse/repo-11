@@ -24,14 +24,14 @@ export SHIFTLEFT_ACCESS_TOKEN=$token
 
 HIDDEN_DIR=$(ls -a $path | grep '.git')
 
-if [ -n ${HIDDEN_DIR} ]; then
+if [[ -v ${HIDDEN_DIR} ]]; then
   git init 2> /dev/null > /dev/null
   git config user.name "githubtest"
   git add --all 2> /dev/null > /dev/null
   git commit -m "local linguist auto commit" 2> /dev/null > /dev/null
 fi
 
-if [[ ${path} = "." ]];
+if [ ${path} = "." ];
 then
     path=$pwd
     echo "Path is current dir"
