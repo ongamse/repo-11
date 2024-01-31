@@ -28,6 +28,6 @@ jobs:
       shell: bash
       run: |
         sudo chmod a+x ./detectLang.sh
-        sh -x ./detectLang.sh --app testmultilang --path ${GITHUB_WORKSPACE} 
+        sh -x ./detectLang.sh --app testmultilang --path ${GITHUB_WORKSPACE} --token ${SHIFTLEFT_ACCESS_TOKEN}
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
