@@ -73,8 +73,11 @@ for lang in $languages; do
             ./sl analyze --app $appName-$lang --tag app.group=$appName --go $path
             ;;
         C)
-            ./sl analyze --app $appName-$lang --tag app.group=$appName --c $path
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --c $path -- --with-include-auto-discovery
             ;;
+        C++)
+            ./sl analyze --app $appName-$lang --tag app.group=$appName --c $path -- --with-include-auto-discovery
+            ;;            
         Kotlin)
             ./sl analyze --app $appName-$lang --tag app.group=$appName --kotlin $path
             ;;
